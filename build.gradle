@@ -1,11 +1,12 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
+	id 'java'
+	id 'application'
 	id 'org.springframework.boot' version '2.3.1.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'org.openjfx.javafxplugin' version '0.0.8'
-	id 'java'
-	id 'application'
+	id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
 
 group = 'com.niesens'
@@ -22,6 +23,9 @@ dependencies {
 	implementation 'org.springframework.integration:spring-integration-ip'
 	implementation 'org.openjfx:javafx-controls:13'
 	implementation 'org.openjfx:javafx-fxml:13'
+	implementation 'org.openjfx:javafx-graphics:13:win'
+	implementation 'org.openjfx:javafx-graphics:13:mac'
+	implementation 'org.openjfx:javafx-graphics:13:linux'
 	implementation 'commons-io:commons-io:2.7'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -37,7 +41,9 @@ javafx {
 	modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
-mainClassName = 'com.niesens.potalogger.PotaLoggerApplication'
+application {
+	mainClassName = 'com.niesens.potalogger.Main'
+}
 
 processResources {
 	filesMatching('*.properties') {
