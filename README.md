@@ -10,8 +10,8 @@ and UDP upload of the ADIF data into Log4OM.
 
 Email Lists
 -----------
-* New release announcements: https://groups.io/g/PotaLogger-Announcements
-* Support and discussions: https://groups.io/g/PotaLogger
+* New release announcements: https://groups.io/g/ClausPotaLogger-Announcements
+* Support and discussions: https://groups.io/g/ClausPotaLogger
 
 
 License
