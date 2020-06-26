@@ -75,7 +75,9 @@ public class Controller implements Initializable {
     @FXML
     private DatePicker formDate;
     @FXML
-    private TextField formTime;
+    private TextField formTimeHH;
+    @FXML
+    private TextField formTimeMM;
     @FXML
     private TextField formCallsign;
     @FXML
@@ -112,50 +114,26 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        myCallsign.setTextFormatter(new TextFormatter<String>(change -> {
-            // Valid: upper case
-            change.setText(change.getText().toUpperCase());
-            return change;
-        }));
-        myGrid.setTextFormatter(new TextFormatter<String>(change -> {
-            // Valid: A throu R for position one and two, 00 through 99 for position three and four
-            change.setText(change.getText().toUpperCase());
-            return change.getControlNewText().matches("[A-R]{0,2}|[A-R]{2}[0-9]{0,2}") ? change : null;
-        }));
-        myIaruRegion.setTextFormatter(new TextFormatter<String>(change -> {
-            // Valid: 1, 2, 3
-            return change.getControlNewText().matches("[0-3]?") ? change : null;
-        }));
-        myItu.setTextFormatter(new TextFormatter<String>(change -> {
-            // Valid: 1 to 90
-            return change.getControlNewText().matches("[1-9]?|[1-8][0-9]|90") ? change : null;
-        }));
-        myCq.setTextFormatter(new TextFormatter<String>(change -> {
-            // Valid: 1 to 40
-            return change.getControlNewText().matches("[1-9]?|[1-3][0-9]|40") ? change : null;
-        }));
-        myCq.setTextFormatter(new TextFormatter<String>(change -> {
-            // Valid: K-####
-            return change.getControlNewText().matches("[1-9]?|[1-3][0-9]|40") ? change : null;
-        }));
+        myCallsign.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::upperCase));
+        myGrid.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::gridCoordinate));
+        myIaruRegion.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::numbersTo3));
+        myItu.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::numbersTo90));
+        myCq.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::numbersTo40));
 
-        formActivatedPark.setTextFormatter(new TextFormatter<String>(change -> {
-            // Valid: upper case
-            change.setText(change.getText().toUpperCase());
-            return change;
-        }));
+        formActivatedPark.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::upperCase));
+        formFrequency.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::frequency));
         formMode.getItems().addAll(Mode.values());
-        formCallsign.setTextFormatter(new TextFormatter<String>(change -> {
-            // Valid: upper case
-            change.setText(change.getText().toUpperCase());
-            return change;
+        formTimeHH.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::timeHH));
+        formTimeMM.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::timeMM));
+        formCallsign.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::upperCase));
+        formRstSent.setTextFormatter(new TextFormatter<String>(change -> {
+            return CustomTextFormatter.rst(change, formMode.getValue());
         }));
-        formParkToPark.setTextFormatter(new TextFormatter<String>(change -> {
-            // Valid: upper case
-            change.setText(change.getText().toUpperCase());
-            return change;
+        formRstReceived.setTextFormatter(new TextFormatter<String>(change -> {
+            return CustomTextFormatter.rst(change, formMode.getValue());
         }));
         formRstReceived.setOnKeyPressed(this::addContactOnEnter);
+        formParkToPark.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::upperCase));
         formParkToPark.setOnKeyPressed(this::addContactOnEnter);
 
         contactSequence.setCellValueFactory(new PropertyValueFactory<>("sequence"));
@@ -166,6 +144,7 @@ public class Controller implements Initializable {
         contactRstReceived.setCellValueFactory(new PropertyValueFactory<>("rstReceived"));
         contactParkToPark.setCellValueFactory(new PropertyValueFactory<>("parkToPark"));
 
+        // Set default values from user preferences
         myCallsign.setText(userPrefs.get("myCallsign", ""));
         myGrid.setText(userPrefs.get("myGrid", ""));
         myCountry.setText(userPrefs.get("myCountry", ""));
@@ -186,7 +165,7 @@ public class Controller implements Initializable {
         Qso qso = new Qso(
                 formContacts.getItems().size() + 1,
                 formDate.getValue(),
-                LocalTime.parse(formTime.getText()),
+                LocalTime.parse(formTimeHH.getText() + ":" + formTimeMM.getText()),
                 formCallsign.getText(),
                 formRstSent.getText(),
                 formRstReceived.getText(),
@@ -205,7 +184,8 @@ public class Controller implements Initializable {
         );
         qsos.add(qso);
         formContacts.getItems().add(qso);
-        formCallsign.requestFocus();
+        formParkToPark.clear();
+        formTimeMM.requestFocus();
     }
 
     public void saveAdifFile(ActionEvent event) {

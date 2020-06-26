@@ -140,10 +140,14 @@
                                 <DatePicker fx:id="formDate"/>
                             </children>
                         </VBox>
-                        <VBox prefWidth="100.0">
+                        <VBox>
                             <children>
                                 <Label text="Time"/>
-                                <TextField fx:id="formTime" promptText="Time"/>
+                                <HBox prefWidth="100.0">
+                                    <TextField fx:id="formTimeHH" promptText="HH"/>
+                                    <Label text=":"/>
+                                    <TextField fx:id="formTimeMM" promptText="MM"/>
+                                </HBox>
                             </children>
                         </VBox>
                         <VBox prefWidth="100.0">
