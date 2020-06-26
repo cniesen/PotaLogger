@@ -35,6 +35,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.CheckMenuItem?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="524.0"
             prefWidth="789.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.niesens.potalogger.Controller">
@@ -50,16 +51,18 @@
                         <MenuItem text="_Exit"/>
                     </items>
                 </Menu>
-                <Menu text="_Misc">
-                    <items>
-                        <MenuItem onAction="#removePreferences" text="_Remove Preferences"/>
-                    </items>
+                <Menu text="_Options">
+                        <items>
+                            <CheckMenuItem fx:id="settingsLocalTime" onAction="#settingsLocalTime" selected="false" text="_Local time zone for data entry" />
+                            <MenuItem onAction="#settings" text="_Settings"/>
+                        </items>
                 </Menu>
                 <Menu text="_Help">
                     <items>
                         <MenuItem onAction="#appHomepage" text="_Claus' POTA Logger Website"/>
                         <MenuItem onAction="#support" text="_Support Email List"/>
                         <MenuItem onAction="#download" text="_Latest Release"/>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem onAction="#about" text="_About"/>
                     </items>
                 </Menu>
@@ -142,7 +145,7 @@
                         </VBox>
                         <VBox>
                             <children>
-                                <Label text="Time"/>
+                                <Label fx:id="formTimeLabel" text="Time"/>
                                 <HBox prefWidth="100.0">
                                     <TextField fx:id="formTimeHH" promptText="HH"/>
                                     <Label text=":"/>

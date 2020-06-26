@@ -15,10 +15,14 @@
 
 package com.niesens.potalogger;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
@@ -26,6 +30,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.springframework.integration.ip.udp.UnicastSendingMessageHandler;
@@ -39,15 +44,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public class Controller implements Initializable {
+    @FXML
+    private CheckMenuItem settingsLocalTime;
 
     @FXML
     private TextField myCallsign;
@@ -74,6 +79,8 @@ public class Controller implements Initializable {
     private ChoiceBox<Mode> formMode;
     @FXML
     private DatePicker formDate;
+    @FXML
+    private Label formTimeLabel;
     @FXML
     private TextField formTimeHH;
     @FXML
@@ -123,6 +130,7 @@ public class Controller implements Initializable {
         formActivatedPark.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::upperCase));
         formFrequency.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::frequency));
         formMode.getItems().addAll(Mode.values());
+        formMode.addEventFilter(KeyEvent.KEY_PRESSED, CustomEventFilter::handleUpDown);
         formTimeHH.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::timeHH));
         formTimeMM.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::timeMM));
         formCallsign.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::upperCase));
@@ -145,6 +153,8 @@ public class Controller implements Initializable {
         contactParkToPark.setCellValueFactory(new PropertyValueFactory<>("parkToPark"));
 
         // Set default values from user preferences
+        settingsLocalTime.setSelected(userPrefs.getBoolean("settingsLocalTime", false));
+        setFormTimeLabel(settingsLocalTime.isSelected());
         myCallsign.setText(userPrefs.get("myCallsign", ""));
         myGrid.setText(userPrefs.get("myGrid", ""));
         myCountry.setText(userPrefs.get("myCountry", ""));
@@ -162,10 +172,14 @@ public class Controller implements Initializable {
     }
 
     public void addContact() {
+        LocalDateTime localDateTime = LocalDateTime.parse(formDate.getValue() + "T" + formTimeHH.getText() + ":" + formTimeMM.getText());
+        if (userPrefs.getBoolean("settingsLocalTime", false)) {
+            localDateTime = localDateTime.atZone(Clock.systemDefaultZone().getZone()).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
+        }
         Qso qso = new Qso(
                 formContacts.getItems().size() + 1,
-                formDate.getValue(),
-                LocalTime.parse(formTimeHH.getText() + ":" + formTimeMM.getText()),
+                localDateTime.toLocalDate(),
+                localDateTime.toLocalTime(),
                 formCallsign.getText(),
                 formRstSent.getText(),
                 formRstReceived.getText(),
@@ -213,11 +227,12 @@ public class Controller implements Initializable {
     }
 
     public void udpAdifFile() {
-        UnicastSendingMessageHandler handler = new UnicastSendingMessageHandler("localhost", 8899);
+        UnicastSendingMessageHandler handler = new UnicastSendingMessageHandler(userPrefs.get("settingsHost",""), userPrefs.getInt("settingsPort",0));
         handler.handleMessage(MessageBuilder.withPayload(new Adif().addAllQsos(qsos).toString()).build());
     }
 
     public void savePreferences() {
+        userPrefs.putBoolean("settingsLocalTime", settingsLocalTime.isSelected());
         userPrefs.put("myCallsign", myCallsign.getText());
         userPrefs.put("myGrid", myGrid.getText());
         userPrefs.put("myCountry", myCountry.getText());
@@ -228,18 +243,32 @@ public class Controller implements Initializable {
         userPrefs.put("myCq", myCq.getText());
     }
 
-    public void removePreferences() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Remove Preferences");
-        alert.setHeaderText("Are you sure you want to remove all saved user preferences, loose entered data, and exit this program?");
-        alert.showAndWait().filter(r -> r == ButtonType.OK).ifPresent(r -> {
-            try {
-                userPrefs.clear();
-                Platform.exit();
-            } catch (BackingStoreException e) {
-                e.printStackTrace();
-            }
-        });
+    public void settingsLocalTime() {
+        userPrefs.putBoolean("settingsLocalTime", settingsLocalTime.isSelected());
+        setFormTimeLabel(settingsLocalTime.isSelected());
+    }
+
+    private void setFormTimeLabel(boolean isLocal) {
+        if (isLocal) {
+            formTimeLabel.setText("Time (local)");
+        } else {
+            formTimeLabel.setText("Time (UTC)");
+        }
+    }
+
+    public void settings() {
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/settings.fxml"));
+        try {
+            Parent root = loader.load();
+            stage.setTitle("Claus' POTA Logger - Settings");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root, 500, 300));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void appHomepage() {
