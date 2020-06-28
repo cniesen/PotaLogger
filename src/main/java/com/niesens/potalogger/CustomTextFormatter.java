@@ -1,5 +1,6 @@
 package com.niesens.potalogger;
 
+import com.niesens.potalogger.enumerations.Mode;
 import javafx.scene.control.TextFormatter;
 
 public class CustomTextFormatter {

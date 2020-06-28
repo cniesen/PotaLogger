@@ -44,16 +44,16 @@
             <menus>
                 <Menu text="_File">
                     <items>
-                        <MenuItem onAction="#saveAdifFile" text="_Save ADIF"/>
-                        <MenuItem onAction="#emailAdifFile" text="E-_Mail ADIF"/>
-                        <MenuItem onAction="#udpAdifFile" text="_UDP Send (Log4OM)"/>
+                        <MenuItem fx:id="menuSaveAdifFile" onAction="#saveAdifFile" text="_Save ADIF"/>
+                        <MenuItem fx:id="menuSavePotaAdifFile" onAction="#savePotaAdifFile" text="Save _POTA ADIF"/>
+                        <MenuItem fx:id="menuUdpAdifFile" onAction="#udpAdifFile" text="_UDP Send (Log4OM)"/>
                         <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem text="_Exit"/>
                     </items>
                 </Menu>
                 <Menu text="_Options">
                         <items>
-                            <CheckMenuItem fx:id="settingsLocalTime" onAction="#settingsLocalTime" selected="false" text="_Local time zone for data entry" />
+                            <CheckMenuItem fx:id="menuSettingsLocalTime" onAction="#settingsLocalTime" selected="false" text="_Local time zone for data entry" />
                             <MenuItem onAction="#settings" text="_Settings"/>
                         </items>
                 </Menu>
@@ -199,7 +199,7 @@
             <columns>
                 <TableColumn fx:id="contactSequence" prefWidth="75.0" text="#"/>
                 <TableColumn fx:id="contactDate" prefWidth="75.0" text="Date"/>
-                <TableColumn fx:id="contactTime" prefWidth="75.0" text="Time"/>
+                <TableColumn fx:id="contactTime" prefWidth="75.0" text="Time (UTC)"/>
                 <TableColumn fx:id="contactCallsign" prefWidth="75.0" text="Callsign"/>
                 <TableColumn fx:id="contactRstSent" prefWidth="75.0" text="RST Sent"/>
                 <TableColumn fx:id="contactRstReceived" prefWidth="75.0" text="RST Received"/>

@@ -15,8 +15,8 @@
 
 package com.niesens.potalogger;
 
+import com.niesens.potalogger.enumerations.Mode;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -29,6 +29,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -37,6 +38,7 @@ import org.springframework.integration.ip.udp.UnicastSendingMessageHandler;
 import org.springframework.messaging.support.MessageBuilder;
 
 import java.awt.*;
+import javafx.scene.control.MenuItem;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Parameter;
@@ -45,14 +47,20 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 public class Controller implements Initializable {
     @FXML
-    private CheckMenuItem settingsLocalTime;
+    private MenuItem menuSaveAdifFile;
+    @FXML
+    private MenuItem menuSavePotaAdifFile;
+    @FXML
+    private MenuItem menuUdpAdifFile;
+    @FXML
+    private CheckMenuItem menuSettingsLocalTime;
 
     @FXML
     private TextField myCallsign;
@@ -153,8 +161,8 @@ public class Controller implements Initializable {
         contactParkToPark.setCellValueFactory(new PropertyValueFactory<>("parkToPark"));
 
         // Set default values from user preferences
-        settingsLocalTime.setSelected(userPrefs.getBoolean("settingsLocalTime", false));
-        setFormTimeLabel(settingsLocalTime.isSelected());
+        menuSettingsLocalTime.setSelected(userPrefs.getBoolean("settingsLocalTime", false));
+        setFormTimeLabel(menuSettingsLocalTime.isSelected());
         myCallsign.setText(userPrefs.get("myCallsign", ""));
         myGrid.setText(userPrefs.get("myGrid", ""));
         myCountry.setText(userPrefs.get("myCountry", ""));
@@ -163,6 +171,14 @@ public class Controller implements Initializable {
         myIaruRegion.setText(userPrefs.get("myIaruRegion", ""));
         myItu.setText(userPrefs.get("myItu", ""));
         myCq.setText(userPrefs.get("myCq", ""));
+
+        updateMenuActions();
+    }
+
+    private void updateMenuActions() {
+        menuSaveAdifFile.setDisable(qsos.isEmpty());
+        menuSavePotaAdifFile.setDisable(qsos.isEmpty());
+        menuUdpAdifFile.setDisable(qsos.isEmpty());
     }
 
     private void addContactOnEnter(KeyEvent event) {
@@ -199,11 +215,11 @@ public class Controller implements Initializable {
         qsos.add(qso);
         formContacts.getItems().add(qso);
         formParkToPark.clear();
+        updateMenuActions();
         formTimeMM.requestFocus();
     }
 
     public void saveAdifFile(ActionEvent event) {
-        System.out.println("save adif file");
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save ADIF");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Amateur Data Interchange Format (*.adi)", "*.adi");
@@ -212,27 +228,38 @@ public class Controller implements Initializable {
         File file = fileChooser.showSaveDialog((Stage) menuBar.getScene().getWindow());
         if (file != null) {
             try {
-                FileUtils.writeStringToFile(file, new Adif().addAllQsos(qsos).toString(), StandardCharsets.UTF_8);
+                FileUtils.writeStringToFile(file, new Adif().addAllQsos(qsos, false).toString(), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void emailAdifFile() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Not yet implemented");
-        alert.setHeaderText("Bummer!");
-        alert.showAndWait();
+    public void savePotaAdifFile() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory = directoryChooser.showDialog((Stage) menuBar.getScene().getWindow());
+        if (selectedDirectory != null) {
+            try {
+                File file = new File(selectedDirectory.getAbsolutePath() + "/" + myCallsign.getText() + "@"
+                        + formActivatedPark.getText() + " " + getQsoFirstDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".adi");
+                FileUtils.writeStringToFile(file, new Adif().addAllQsos(qsos, true).toString(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private LocalDate getQsoFirstDate() {
+        return qsos.stream().min(Comparator.comparing(Qso::getDate)).orElseThrow(NoSuchElementException::new).getDate();
     }
 
     public void udpAdifFile() {
         UnicastSendingMessageHandler handler = new UnicastSendingMessageHandler(userPrefs.get("settingsHost",""), userPrefs.getInt("settingsPort",0));
-        handler.handleMessage(MessageBuilder.withPayload(new Adif().addAllQsos(qsos).toString()).build());
+        handler.handleMessage(MessageBuilder.withPayload(new Adif().addAllQsos(qsos, false).toString()).build());
     }
 
     public void savePreferences() {
-        userPrefs.putBoolean("settingsLocalTime", settingsLocalTime.isSelected());
+        userPrefs.putBoolean("settingsLocalTime", menuSettingsLocalTime.isSelected());
         userPrefs.put("myCallsign", myCallsign.getText());
         userPrefs.put("myGrid", myGrid.getText());
         userPrefs.put("myCountry", myCountry.getText());
@@ -244,8 +271,8 @@ public class Controller implements Initializable {
     }
 
     public void settingsLocalTime() {
-        userPrefs.putBoolean("settingsLocalTime", settingsLocalTime.isSelected());
-        setFormTimeLabel(settingsLocalTime.isSelected());
+        userPrefs.putBoolean("settingsLocalTime", menuSettingsLocalTime.isSelected());
+        setFormTimeLabel(menuSettingsLocalTime.isSelected());
     }
 
     private void setFormTimeLabel(boolean isLocal) {

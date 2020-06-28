@@ -15,6 +15,7 @@
 
 package com.niesens.potalogger;
 
+import com.niesens.potalogger.enumerations.Band;
 import org.springframework.integration.ip.udp.UnicastSendingMessageHandler;
 import org.springframework.messaging.support.MessageBuilder;
 
@@ -34,9 +35,7 @@ public class Adif {
         appendAdifField("ADIF_VERS", "3.1.0");
         appendAdifField("PROGRAMID", "Claus' POTA Logger");
         appendAdifField("PROGRAMVERSION", BuildInfo.getVersion());
-        appendAdifEor();
-
-
+        appendAdifEoh();
     }
 
     public Adif addQso(Qso qso) {
@@ -45,7 +44,7 @@ public class Adif {
         appendAdifField("CALL", qso.getCallsign());
         appendAdifField("RST_RCVD", qso.getRstReceived());
         appendAdifField("RST_SENT", qso.getRstSent());
-//        appendAdifField("BAND", qso.getBand());
+        appendAdifField("BAND", Band.ofFrequency(qso.getFrequency()).toString());
         appendAdifField("FREQ", qso.getFrequency());
         appendAdifField("MODE", qso.getMode());
         if (!qso.getParkToPark().isBlank()) {
@@ -68,8 +67,28 @@ public class Adif {
         return this;
     }
 
-    public Adif addAllQsos(List<Qso> qsos) {
-        qsos.forEach(this::addQso);
+    public Adif addPotaQso(Qso qso) {
+        appendAdifField("QSO_DATE", qso.getDate());
+        appendAdifField("TIME_ON", qso.getTime());
+        appendAdifField("CALL", qso.getCallsign());
+        appendAdifField("BAND", Band.ofFrequency(qso.getFrequency()).toString());
+        appendAdifField("MODE", qso.getMode());
+        if (!qso.getParkToPark().isBlank()) {
+            appendAdifField("SIG_INFO", qso.getParkToPark());
+        }
+        appendAdifField("MY_SIG_INFO", qso.getActivatedPark());
+        appendAdifField("STATION_CALLSIGN", qso.getMyCallsign());
+        appendAdifField("OPERATOR", qso.getMyCallsign());
+        appendAdifEor();
+        return this;
+    }
+
+    public Adif addAllQsos(List<Qso> qsos, boolean pota) {
+        if (pota) {
+            qsos.forEach(this::addPotaQso);
+        } else {
+            qsos.forEach(this::addQso);
+        }
         return this;
     }
 
@@ -91,6 +110,9 @@ public class Adif {
         appendAdifField(fieldName, fieldValue.format(timeFormatter));
     }
 
+    private void appendAdifEoh() {
+        adif.append("<EOH>\n");
+    }
     private void appendAdifEor() {
         adif.append("<EOR>\n");
     }
