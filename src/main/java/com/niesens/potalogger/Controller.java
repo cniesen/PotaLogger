@@ -124,8 +124,8 @@ public class Controller implements Initializable {
     @FXML
     private MenuBar menuBar;
 
-    List<Qso> qsos = new ArrayList<>();
-    Preferences userPrefs = Preferences.userNodeForPackage(PotaLoggerApplication.class);
+    private List<Qso> qsos = new ArrayList<>();
+    private Preferences userPrefs = Preferences.userNodeForPackage(PotaLoggerApplication.class);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

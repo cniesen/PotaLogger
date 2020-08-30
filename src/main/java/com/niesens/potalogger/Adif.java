@@ -29,7 +29,7 @@ public class Adif {
     private StringBuilder adif = new StringBuilder();
 
     private DateTimeFormatter dateFormatter = new DateTimeFormatterBuilder().appendPattern("yyyyMMdd").toFormatter();
-    private DateTimeFormatter timeFormatter = new DateTimeFormatterBuilder().appendPattern("kkmmss").toFormatter();
+    private DateTimeFormatter timeFormatter = new DateTimeFormatterBuilder().appendPattern("HHmmss").toFormatter();
 
     public Adif() {
         appendAdifField("ADIF_VERS", "3.1.0");
