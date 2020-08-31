@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	Claus' POTA Logger
+	Copyright (C) 2020  Claus Niesen
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<MenuBar BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="com.niesens.potalogger.controller.MainMenuController">
+    <menus>
+        <Menu text="_File">
+            <items>
+                <MenuItem fx:id="menuSaveAdifFile" onAction="#saveAdifFile" text="_Save ADIF" />
+                <MenuItem fx:id="menuSavePotaAdifFile" onAction="#savePotaAdifFile" text="Save _POTA ADIF" />
+                <MenuItem fx:id="menuUdpAdifFile" onAction="#sendUdpAdifFile" text="_UDP Send (Log4OM)" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem text="_Exit" />
+            </items>
+        </Menu>
+        <Menu text="_Options">
+                <items>
+                    <CheckMenuItem fx:id="menuSettingsLocalTime" onAction="#settingsLocalTime" text="_Local time zone for data entry" />
+                    <MenuItem onAction="#settings" text="_Settings" />
+                </items>
+        </Menu>
+        <Menu text="_Help">
+            <items>
+                <MenuItem onAction="#appHomepage" text="_Claus' POTA Logger Website" />
+                <MenuItem onAction="#support" text="_Support Email List" />
+                <MenuItem onAction="#download" text="_Latest Release" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem onAction="#about" text="_About" />
+            </items>
+        </Menu>
+    </menus>
+</MenuBar>

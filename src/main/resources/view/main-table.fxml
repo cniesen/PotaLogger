@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	Claus' POTA Logger
+	Copyright (C) 2020  Claus Niesen
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"
+           xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.niesens.potalogger.controller.MainTableController">
+    <placeholder>
+        <Label text="No QSOs logged" />
+    </placeholder>
+    <columns>
+        <TableColumn fx:id="contactSequence" prefWidth="75.0" text="#" />
+        <TableColumn fx:id="contactDate" prefWidth="75.0" text="Date" />
+        <TableColumn fx:id="contactTime" prefWidth="75.0" text="Time (UTC)" />
+        <TableColumn fx:id="contactCallsign" prefWidth="75.0" text="Callsign" />
+        <TableColumn fx:id="contactRstSent" prefWidth="75.0" text="RST Sent" />
+        <TableColumn fx:id="contactRstReceived" prefWidth="75.0" text="RST Received" />
+        <TableColumn fx:id="contactParkToPark" prefWidth="75.0" text="Part to Park" />
+    </columns>
+</TableView>

@@ -17,6 +17,7 @@ package com.niesens.potalogger;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class Qso {
     private int sequence;
@@ -201,5 +202,22 @@ public class Qso {
 
     public void setMyIaruRegion(String myIaruRegion) {
         this.myIaruRegion = myIaruRegion;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Qso qso = (Qso) o;
+        return date.equals(qso.date) &&
+                time.equals(qso.time) &&
+                callsign.equals(qso.callsign) &&
+                frequency.equals(qso.frequency) &&
+                mode.equals(qso.mode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(date, time, callsign, frequency, mode);
     }
 }

@@ -15,9 +15,8 @@
 
 package com.niesens.potalogger;
 
+import com.niesens.potalogger.config.BuildInfo;
 import com.niesens.potalogger.enumerations.Band;
-import org.springframework.integration.ip.udp.UnicastSendingMessageHandler;
-import org.springframework.messaging.support.MessageBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,10 +25,10 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 
 public class Adif {
-    private StringBuilder adif = new StringBuilder();
+    private final StringBuilder adif = new StringBuilder();
 
-    private DateTimeFormatter dateFormatter = new DateTimeFormatterBuilder().appendPattern("yyyyMMdd").toFormatter();
-    private DateTimeFormatter timeFormatter = new DateTimeFormatterBuilder().appendPattern("HHmmss").toFormatter();
+    private final DateTimeFormatter dateFormatter = new DateTimeFormatterBuilder().appendPattern("yyyyMMdd").toFormatter();
+    private final DateTimeFormatter timeFormatter = new DateTimeFormatterBuilder().appendPattern("HHmmss").toFormatter();
 
     public Adif() {
         appendAdifField("ADIF_VERS", "3.1.0");
@@ -123,10 +122,5 @@ public class Adif {
 
     public String toString() {
         return adif.toString();
-    }
-
-    public void sendAdifViaUdp(String host, int port) {
-        UnicastSendingMessageHandler handler = new UnicastSendingMessageHandler(host, port);
-        handler.handleMessage(MessageBuilder.withPayload(adif.toString()).build());
     }
 }

@@ -15,6 +15,7 @@
 
 package com.niesens.potalogger;
 
+import com.niesens.potalogger.controller.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -33,7 +34,7 @@ public class PotaLoggerApplication extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/main.fxml"));
 		Parent root = loader.load();
 		primaryStage.setTitle("Claus' POTA Logger");
 		primaryStage.setOnCloseRequest(evt -> {
@@ -42,7 +43,7 @@ public class PotaLoggerApplication extends Application {
 			alert.setHeaderText("Are you sure you want to close the program?\n\n If you did not save the logs beforehand you will loose the data.");
 			ButtonType responseButton = alert.showAndWait().orElse(ButtonType.CANCEL);
 			if (responseButton == ButtonType.OK) {
-				Controller controller = loader.getController();
+				MainController controller = loader.getController();
 				controller.savePreferences();
 			} else {
 				evt.consume();

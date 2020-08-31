@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	Claus' POTA Logger
+	Copyright (C) 2020  Claus Niesen
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="524.0"
+            prefWidth="789.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.niesens.potalogger.controller.MainController">
+    <top>
+        <fx:include fx:id="menuBar" source="main-menu.fxml" />
+    </top>
+    <center>
+        <fx:include fx:id="form" source="main-form.fxml" />
+    </center>
+    <bottom>
+        <fx:include fx:id="formContacts" source="main-table.fxml" />
+    </bottom>
+</BorderPane>

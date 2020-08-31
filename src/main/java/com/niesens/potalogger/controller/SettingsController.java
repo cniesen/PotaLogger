@@ -13,8 +13,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.niesens.potalogger;
+package com.niesens.potalogger.controller;
 
+import com.niesens.potalogger.PotaLoggerApplication;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

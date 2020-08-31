@@ -13,7 +13,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.niesens.potalogger;
+package com.niesens.potalogger.config;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -27,6 +27,7 @@ dependencies {
 	implementation 'org.openjfx:javafx-graphics:13:mac'
 	implementation 'org.openjfx:javafx-graphics:13:linux'
 	implementation 'commons-io:commons-io:2.7'
+	implementation 'org.apache.commons:commons-lang3:3.11'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
