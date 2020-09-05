@@ -20,6 +20,7 @@ import com.niesens.potalogger.CustomTextFormatter;
 import com.niesens.potalogger.PotaLoggerApplication;
 import com.niesens.potalogger.Qso;
 import com.niesens.potalogger.enumerations.Mode;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -29,6 +30,7 @@ import javafx.scene.layout.VBox;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -81,6 +83,8 @@ public class MainFormController extends VBox {
 
     private final Preferences userPrefs = Preferences.userNodeForPackage(PotaLoggerApplication.class);
     private final List<Listener> listeners = new ArrayList<>();
+
+    private static final PseudoClass errorClass = PseudoClass.getPseudoClass("error");
 
     public interface Listener {
         /**
@@ -144,10 +148,31 @@ public class MainFormController extends VBox {
     }
     
     public void addContact() {
-        LocalDateTime localDateTime = LocalDateTime.parse(formDate.getValue() + "T" + formTimeHH.getText() + ":" + formTimeMM.getText());
-        if (userPrefs.getBoolean("settingsLocalTime", false)) {
-            localDateTime = localDateTime.atZone(Clock.systemDefaultZone().getZone()).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
+        boolean valid = validateTextFieldNotBlank(formCallsign);
+        valid &= validateTextFieldNotBlank(formRstSent);
+        valid &= validateTextFieldNotBlank(formRstReceived);
+        valid &= validateTextFieldNotBlank(formParkToPark);
+        valid &= validateTextFieldNotBlank(formActivatedPark);
+        valid &= validateTextFieldNotBlank(formFrequency);
+        valid &= validateChoiceBoxNotNull(formMode);
+        valid &= validateTextFieldNotBlank(myCallsign);
+        valid &= validateTextFieldNotBlank(myCountry);
+        valid &= validateTextFieldNotBlank(myState);
+        valid &= validateTextFieldNotBlank(myCounty);
+        valid &= validateTextFieldNotBlank(myGrid);
+        valid &= validateTextFieldNotBlank(myItu);
+        valid &= validateTextFieldNotBlank(myCq);
+        valid &= validateTextFieldNotBlank(myIaruRegion);
+        LocalDateTime localDateTime = validateDateTime(formDate, formTimeHH, formTimeMM);
+        if (localDateTime == null) {
+            valid = false;
         }
+
+        if (!valid) {
+            formMessage.setText("Invalid data!");
+            return;
+        }
+
         Qso qso = new Qso(
  1 ,//                formContacts.getItems().size() + 1,
                 localDateTime.toLocalDate(),
@@ -176,6 +201,71 @@ public class MainFormController extends VBox {
             formMessage.setText("");
             formParkToPark.clear();
             formTimeMM.requestFocus();
+        }
+    }
+
+    private static boolean validateTextFieldNotBlank(TextInputControl textInputControl) {
+        if (textInputControl.getText().isBlank()) {
+            textInputControl.pseudoClassStateChanged(errorClass, true);
+            return false;
+        } else {
+            textInputControl.pseudoClassStateChanged(errorClass, false);
+            return true;
+        }
+    }
+
+    private static boolean validateTextFieldLength(TextInputControl textInputControl, int length) {
+        if (textInputControl.getText().length() == length) {
+            textInputControl.pseudoClassStateChanged(errorClass, false);
+            return true;
+        } else {
+            textInputControl.pseudoClassStateChanged(errorClass, true);
+            return false;
+        }
+    }
+
+    private static boolean validateChoiceBoxNotNull(ChoiceBox choiceBox) {
+        if (choiceBox.getValue() == null) {
+            choiceBox.pseudoClassStateChanged(errorClass, true);
+            return false;
+        } else {
+            choiceBox.pseudoClassStateChanged(errorClass, false);
+            return true;
+        }
+    }
+
+     private static boolean validateDatePicker(DatePicker datepicker) {
+        if (datepicker.getEditor().getText().isBlank()) {
+            datepicker.pseudoClassStateChanged(errorClass, true);
+            return false;
+        }
+        try {
+            datepicker.setValue(datepicker.getConverter().fromString(datepicker.getEditor().getText()));
+            datepicker.pseudoClassStateChanged(errorClass, false);
+            return true;
+        } catch (DateTimeParseException e) {
+            datepicker.pseudoClassStateChanged(errorClass, true);
+            return false;
+        }
+    }
+
+    private LocalDateTime validateDateTime(DatePicker formDate, TextField formTimeHH, TextField formTimeMM) {
+        boolean valid = true;
+        valid &= validateDatePicker(formDate);
+        valid &= validateTextFieldLength(formTimeHH, 2);
+        valid &= validateTextFieldLength(formTimeMM, 2);
+        if (!valid) {
+            return null;
+        }
+
+        try {
+            LocalDateTime localDateTime = LocalDateTime.parse(formDate.getValue() + "T" + formTimeHH.getText() + ":" + formTimeMM.getText());
+            if (userPrefs.getBoolean("settingsLocalTime", false)) {
+                localDateTime = localDateTime.atZone(Clock.systemDefaultZone().getZone()).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
+            }
+            return localDateTime;
+        } catch (DateTimeParseException e) {
+            return null;
         }
     }
 

@@ -50,6 +50,7 @@ public class PotaLoggerApplication extends Application {
 			}
 		});
 		primaryStage.setScene(new Scene(root, 800, 500));
+		primaryStage.getScene().getStylesheets().add("stylesheet.css");
 		primaryStage.show();
 	}
 }
