@@ -3,9 +3,9 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
 	id 'java'
 	id 'application'
-	id 'org.springframework.boot' version '2.3.1.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-	id 'org.openjfx.javafxplugin' version '0.0.8'
+	id 'org.springframework.boot' version '2.3.3.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id 'org.openjfx.javafxplugin' version '0.0.9'
 	id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
 
@@ -21,11 +21,11 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.integration:spring-integration-ip'
-	implementation 'org.openjfx:javafx-controls:13'
-	implementation 'org.openjfx:javafx-fxml:13'
-	implementation 'org.openjfx:javafx-graphics:13:win'
-	implementation 'org.openjfx:javafx-graphics:13:mac'
-	implementation 'org.openjfx:javafx-graphics:13:linux'
+	implementation 'org.openjfx:javafx-controls:14'
+	implementation 'org.openjfx:javafx-fxml:14'
+	implementation 'org.openjfx:javafx-graphics:14:win'
+	implementation 'org.openjfx:javafx-graphics:14:mac'
+	implementation 'org.openjfx:javafx-graphics:14:linux'
 	implementation 'commons-io:commons-io:2.7'
 	implementation 'org.apache.commons:commons-lang3:3.11'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
