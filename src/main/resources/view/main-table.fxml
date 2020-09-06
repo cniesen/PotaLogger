@@ -25,12 +25,12 @@
         <Label text="No QSOs logged" />
     </placeholder>
     <columns>
-        <TableColumn fx:id="contactSequence" prefWidth="75.0" text="#" />
-        <TableColumn fx:id="contactDate" prefWidth="75.0" text="Date" />
-        <TableColumn fx:id="contactTime" prefWidth="75.0" text="Time (UTC)" />
-        <TableColumn fx:id="contactCallsign" prefWidth="75.0" text="Callsign" />
-        <TableColumn fx:id="contactRstSent" prefWidth="75.0" text="RST Sent" />
-        <TableColumn fx:id="contactRstReceived" prefWidth="75.0" text="RST Received" />
-        <TableColumn fx:id="contactParkToPark" prefWidth="75.0" text="Part to Park" />
+        <TableColumn fx:id="contactSequence" prefWidth="75.0" text="#" sortable="false"/>
+        <TableColumn fx:id="contactDate" prefWidth="75.0" text="Date" sortable="false"/>
+        <TableColumn fx:id="contactTime" prefWidth="75.0" text="Time (UTC)" sortable="false" />
+        <TableColumn fx:id="contactCallsign" prefWidth="75.0" text="Callsign" sortable="false"/>
+        <TableColumn fx:id="contactRstSent" prefWidth="75.0" text="RST Sent" sortable="false"/>
+        <TableColumn fx:id="contactRstReceived" prefWidth="75.0" text="RST Received" sortable="false"/>
+        <TableColumn fx:id="contactParkToPark" prefWidth="75.0" text="Part to Park" sortable="false"/>
     </columns>
 </TableView>

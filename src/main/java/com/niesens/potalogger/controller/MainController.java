@@ -18,6 +18,9 @@ package com.niesens.potalogger.controller;
 import com.niesens.potalogger.Adif;
 import com.niesens.potalogger.PotaLoggerApplication;
 import com.niesens.potalogger.Qso;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.MenuBar;
@@ -50,7 +53,9 @@ public class MainController implements Initializable, MainMenuController.Listene
     private MainFormController formController;
 
     @FXML
-    private TableView<Qso> formContacts;
+    private TableView<Qso> qsoTableView;
+    private final ObservableList<Qso> qsoObservableList = FXCollections.observableArrayList();
+
     @FXML
     private MainTableController formContactsController;
 
@@ -59,6 +64,9 @@ public class MainController implements Initializable, MainMenuController.Listene
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        SortedList<Qso> qsoSortedList = new SortedList<>(qsoObservableList, Comparator.comparing(Qso::getDate).thenComparing(Qso::getTime));
+        qsoTableView.setItems(qsoSortedList);
+
         menuBarController.addListener(this);
         formController.addListener(this);
 
@@ -72,7 +80,7 @@ public class MainController implements Initializable, MainMenuController.Listene
             return false;
         } else {
             qsos.add(qso);
-            formContacts.getItems().add(qso);
+            qsoObservableList.add(qso);
             menuBarController.updateMenuActions(qsos.isEmpty());
             return true;
         }

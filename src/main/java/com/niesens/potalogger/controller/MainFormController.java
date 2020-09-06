@@ -151,7 +151,6 @@ public class MainFormController extends VBox {
         boolean valid = validateTextFieldNotBlank(formCallsign);
         valid &= validateTextFieldNotBlank(formRstSent);
         valid &= validateTextFieldNotBlank(formRstReceived);
-        valid &= validateTextFieldNotBlank(formParkToPark);
         valid &= validateTextFieldNotBlank(formActivatedPark);
         valid &= validateTextFieldNotBlank(formFrequency);
         valid &= validateChoiceBoxNotNull(formMode);
@@ -174,7 +173,6 @@ public class MainFormController extends VBox {
         }
 
         Qso qso = new Qso(
- 1 ,//                formContacts.getItems().size() + 1,
                 localDateTime.toLocalDate(),
                 localDateTime.toLocalTime(),
                 formCallsign.getText(),

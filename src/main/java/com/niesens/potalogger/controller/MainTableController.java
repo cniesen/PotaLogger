@@ -16,8 +16,10 @@
 package com.niesens.potalogger.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 
 import java.lang.reflect.Parameter;
 import java.time.LocalDate;
@@ -40,7 +42,7 @@ public class MainTableController {
     private TableColumn<Parameter, String> contactParkToPark;
 
     public void initialize() {
-        contactSequence.setCellValueFactory(new PropertyValueFactory<>("sequence"));
+        contactSequence.setCellFactory(indexCellFactory());
         contactDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         contactTime.setCellValueFactory(new PropertyValueFactory<>("time"));
         contactCallsign.setCellValueFactory(new PropertyValueFactory<>("callsign"));
@@ -48,4 +50,19 @@ public class MainTableController {
         contactRstReceived.setCellValueFactory(new PropertyValueFactory<>("rstReceived"));
         contactParkToPark.setCellValueFactory(new PropertyValueFactory<>("parkToPark"));
     }
-}
+
+    public static <T> Callback<TableColumn<T, Integer>, TableCell<T, Integer>> indexCellFactory() {
+        return t -> new TableCell<>() {
+            @Override
+            public void updateIndex(int index) {
+                super.updateIndex(index);
+                if (isEmpty() || index < 0) {
+                    setText(null);
+                } else {
+                    setText(Integer.toString(index + 1));
+                }
+            }
+        };
+    }
+
+ }

@@ -20,7 +20,6 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public class Qso {
-    private int sequence;
     private LocalDate date;
     private LocalTime time;
     private String callsign;
@@ -39,8 +38,7 @@ public class Qso {
     private String myCq;
     private String myIaruRegion;
 
-    public Qso(int sequence, LocalDate date, LocalTime time, String callsign, String rstSent, String rstReceived, String parkToPark, String activatedPark, String frequency, String mode, String myCallsign, String myCountry, String myState, String myCounty, String myGrid, String myItu, String myCq, String myIaruRegion) {
-        this.sequence = sequence;
+    public Qso(LocalDate date, LocalTime time, String callsign, String rstSent, String rstReceived, String parkToPark, String activatedPark, String frequency, String mode, String myCallsign, String myCountry, String myState, String myCounty, String myGrid, String myItu, String myCq, String myIaruRegion) {
         this.date = date;
         this.time = time;
         this.callsign = callsign;
@@ -58,14 +56,6 @@ public class Qso {
         this.myItu = myItu;
         this.myCq = myCq;
         this.myIaruRegion = myIaruRegion;
-    }
-
-    public int getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(int sequence) {
-        this.sequence = sequence;
     }
 
     public LocalDate getDate() {

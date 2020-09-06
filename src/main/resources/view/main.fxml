@@ -27,6 +27,6 @@
         <fx:include fx:id="form" source="main-form.fxml" />
     </center>
     <bottom>
-        <fx:include fx:id="formContacts" source="main-table.fxml" />
+        <fx:include fx:id="qsoTableView" source="main-table.fxml" />
     </bottom>
 </BorderPane>
