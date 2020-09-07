@@ -59,7 +59,6 @@ public class MainController implements Initializable, MainMenuController.Listene
     @FXML
     private MainTableController formContactsController;
 
-    private final List<Qso> qsos = new ArrayList<>();
     private final Preferences userPrefs = Preferences.userNodeForPackage(PotaLoggerApplication.class);
 
     @Override
@@ -71,17 +70,16 @@ public class MainController implements Initializable, MainMenuController.Listene
         formController.addListener(this);
 
         boolean localTime = userPrefs.getBoolean("settingsLocalTime", false);
-        menuBarController.initialize(localTime, qsos.isEmpty());
+        menuBarController.initialize(localTime, qsoObservableList.isEmpty());
     }
 
     @Override
     public boolean onQsoAdd(Qso qso) {
-        if (qsos.contains(qso)) {
+        if (qsoObservableList.contains(qso)) {
             return false;
         } else {
-            qsos.add(qso);
             qsoObservableList.add(qso);
-            menuBarController.updateMenuActions(qsos.isEmpty());
+            menuBarController.updateMenuActions(qsoObservableList.isEmpty());
             return true;
         }
     }
@@ -96,7 +94,7 @@ public class MainController implements Initializable, MainMenuController.Listene
         File file = fileChooser.showSaveDialog(menuBar.getScene().getWindow());
         if (file != null) {
             try {
-                FileUtils.writeStringToFile(file, new Adif().addAllQsos(qsos, false).toString(), StandardCharsets.UTF_8);
+                FileUtils.writeStringToFile(file, new Adif().addAllQsos(qsoObservableList, false).toString(), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -112,7 +110,7 @@ public class MainController implements Initializable, MainMenuController.Listene
             try {
                 File file = new File(selectedDirectory.getAbsolutePath() + "/" + firstQso.getMyCallsign() + "@"
                         + firstQso.getActivatedPark() + " " + firstQso.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".adi");
-                FileUtils.writeStringToFile(file, new Adif().addAllQsos(qsos, true).toString(), StandardCharsets.UTF_8);
+                FileUtils.writeStringToFile(file, new Adif().addAllQsos(qsoObservableList, true).toString(), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -120,13 +118,13 @@ public class MainController implements Initializable, MainMenuController.Listene
     }
 
     private Qso getFirstQso() {
-        return qsos.stream().min(Comparator.comparing(Qso::getDate)).orElseThrow(NoSuchElementException::new);
+        return qsoObservableList.stream().min(Comparator.comparing(Qso::getDate)).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     public void onSendUdpAdifFile() {
         UnicastSendingMessageHandler handler = new UnicastSendingMessageHandler(userPrefs.get("settingsHost",""), userPrefs.getInt("settingsPort",0));
-        handler.handleMessage(MessageBuilder.withPayload(new Adif().addAllQsos(qsos, false).toString()).build());
+        handler.handleMessage(MessageBuilder.withPayload(new Adif().addAllQsos(qsoObservableList, false).toString()).build());
     }
 
     @Override
