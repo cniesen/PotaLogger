@@ -64,7 +64,7 @@ public class MainController implements Initializable, MainMenuController.Listene
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        SortedList<Qso> qsoSortedList = new SortedList<>(qsoObservableList, Comparator.comparing(Qso::getDate).thenComparing(Qso::getTime));
+        SortedList<Qso> qsoSortedList = qsoObservableList.sorted(Comparator.comparing(Qso::getDate).thenComparing(Qso::getTime));
         qsoTableView.setItems(qsoSortedList);
 
         menuBarController.addListener(this);
