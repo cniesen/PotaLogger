@@ -15,6 +15,8 @@
 
 package com.niesens.potalogger;
 
+import com.niesens.potalogger.enumerations.Mode;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
@@ -28,7 +30,7 @@ public class Qso {
     private String parkToPark;
     private String activatedPark;
     private String frequency;
-    private String mode;
+    private Mode mode;
     private String myCallsign;
     private String myCountry;
     private String myState;
@@ -38,7 +40,7 @@ public class Qso {
     private String myCq;
     private String myIaruRegion;
 
-    public Qso(LocalDate date, LocalTime time, String callsign, String rstSent, String rstReceived, String parkToPark, String activatedPark, String frequency, String mode, String myCallsign, String myCountry, String myState, String myCounty, String myGrid, String myItu, String myCq, String myIaruRegion) {
+    public Qso(LocalDate date, LocalTime time, String callsign, String rstSent, String rstReceived, String parkToPark, String activatedPark, String frequency, Mode mode, String myCallsign, String myCountry, String myState, String myCounty, String myGrid, String myItu, String myCq, String myIaruRegion) {
         this.date = date;
         this.time = time;
         this.callsign = callsign;
@@ -122,11 +124,11 @@ public class Qso {
         this.frequency = frequency;
     }
 
-    public String getMode() {
+    public Mode getMode() {
         return mode;
     }
 
-    public void setMode(String mode) {
+    public void setMode(Mode mode) {
         this.mode = mode;
     }
 

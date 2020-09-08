@@ -22,12 +22,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.springframework.integration.ip.udp.UnicastSendingMessageHandler;
 import org.springframework.messaging.support.MessageBuilder;
@@ -40,7 +46,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.prefs.Preferences;
 
-public class MainController implements Initializable, MainMenuController.Listener, MainFormController.Listener {
+public class MainController implements Initializable, MainMenuController.Listener, MainFormController.Listener, EditQsoController.Listener {
 
     @FXML
     private MenuBar menuBar;
@@ -66,6 +72,26 @@ public class MainController implements Initializable, MainMenuController.Listene
         SortedList<Qso> qsoSortedList = qsoObservableList.sorted(Comparator.comparing(Qso::getDate).thenComparing(Qso::getTime));
         qsoTableView.setItems(qsoSortedList);
 
+        qsoTableView.setOnMouseClicked( event -> { if (event.getClickCount() == 2) {
+            Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/edit-qso.fxml"));
+            try {
+                Parent root = loader.load();
+                stage.setTitle("Claus' POTA Logger - Update QSO");
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(new Scene(root, 700, 300));
+                stage.getScene().getStylesheets().add("stylesheet.css");
+                EditQsoController controller = loader.getController();
+                controller.initData(qsoTableView.getSelectionModel().getSelectedIndex(), qsoTableView.getSelectionModel().getSelectedItem(), this);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }});
+
+        qsoTableView.setOnKeyReleased( event -> { if (event.getCode() == KeyCode.ENTER) {
+            System.out.println(qsoTableView.getSelectionModel().getSelectedItem());
+        }});
         menuBarController.addListener(this);
         formController.addListener(this);
 
@@ -131,6 +157,16 @@ public class MainController implements Initializable, MainMenuController.Listene
     public void onLocalTimeSettingChange(boolean localTimeSelected) {
         userPrefs.putBoolean("settingsLocalTime", localTimeSelected);
         formController.setFormTimeLabel(localTimeSelected);
+    }
+
+    @Override
+    public void onDelete(int index) {
+        qsoObservableList.remove(index);
+    }
+
+    @Override
+    public void onUpdate(int index, Qso qso) {
+        qsoObservableList.set(index, qso);
     }
 
     public void savePreferences() {

@@ -1,44 +1,25 @@
-/*
-	Claus' POTA Logger
-	Copyright (C) 2020  Claus Niesen
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 package com.niesens.potalogger.controller;
 
 import com.niesens.potalogger.CustomEventFilter;
 import com.niesens.potalogger.CustomTextFormatter;
-import com.niesens.potalogger.PotaLoggerApplication;
 import com.niesens.potalogger.Qso;
 import com.niesens.potalogger.enumerations.Mode;
 import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-import java.time.Clock;
+import java.net.URL;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.prefs.Preferences;
+import java.util.ResourceBundle;
 
-public class MainFormController extends VBox {
 
+public class EditQsoController implements Initializable {
     @FXML
     private TextField myCallsign;
     @FXML
@@ -78,30 +59,22 @@ public class MainFormController extends VBox {
     private TextField formRstReceived;
     @FXML
     private TextField formParkToPark;
+
     @FXML
     private Label formMessage;
 
-    private final Preferences userPrefs = Preferences.userNodeForPackage(PotaLoggerApplication.class);
-    private final List<Listener> listeners = new ArrayList<>();
+    private int qsoIndex;
+    private Listener callbackListener;
 
     private static final PseudoClass errorClass = PseudoClass.getPseudoClass("error");
 
     public interface Listener {
-        /**
-         * Add QSO
-         *
-         * @param qso the QSO to be added
-         * @return true on successful app, false on duplicate qso
-         */
-        boolean onQsoAdd(Qso qso);
+        void onDelete(int index);
+        void onUpdate(int index, Qso qso);
     }
 
-    public void addListener(Listener listener) {
-        Objects.requireNonNull(listener);
-        listeners.add(listener);
-    }
-
-    public void initialize() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         this.myCallsign.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::upperCase));
         this.myGrid.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::gridCoordinate));
         this.myIaruRegion.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::numbersTo3));
@@ -117,37 +90,36 @@ public class MainFormController extends VBox {
         formCallsign.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::upperCase));
         formRstSent.setTextFormatter(new TextFormatter<String>(change -> CustomTextFormatter.rst(change, formMode.getValue())));
         formRstReceived.setTextFormatter(new TextFormatter<String>(change -> CustomTextFormatter.rst(change, formMode.getValue())));
-        formRstReceived.setOnKeyPressed(this::addContactOnEnter);
         formParkToPark.setTextFormatter(new TextFormatter<String>(CustomTextFormatter::upperCase));
-        formParkToPark.setOnKeyPressed(this::addContactOnEnter);
-
-        // Set default values from user preferences
-        setFormTimeLabel(userPrefs.getBoolean("settingsLocalTime", false));
-        myCallsign.setText(userPrefs.get("myCallsign", ""));
-        myGrid.setText(userPrefs.get("myGrid", ""));
-        myCountry.setText(userPrefs.get("myCountry", ""));
-        myState.setText(userPrefs.get("myState", ""));
-        myCounty.setText(userPrefs.get("myCounty", ""));
-        myIaruRegion.setText(userPrefs.get("myIaruRegion", ""));
-        myItu.setText(userPrefs.get("myItu", ""));
-        myCq.setText(userPrefs.get("myCq", ""));
     }
 
-    public void setFormTimeLabel(boolean isLocal) {
-        if (isLocal) {
-            formTimeLabel.setText("Time (local)");
-        } else {
-            formTimeLabel.setText("Time (UTC)");
-        }
+    public void initData(int index, Qso qso, Listener listener) {
+        qsoIndex = index;
+        callbackListener = listener;
+        myCallsign.setText(qso.getMyCallsign());
+        myGrid.setText(qso.getMyGrid());
+        myCountry.setText(qso.getMyCountry());
+        myState.setText(qso.getMyState());
+        myCounty.setText(qso.getMyCounty());
+        myIaruRegion.setText(qso.getMyIaruRegion());
+        myItu.setText(qso.getMyItu());
+        myCq.setText(qso.getMyCq());
+
+        formActivatedPark.setText(qso.getActivatedPark());
+        formFrequency.setText(qso.getFrequency());
+        formMode.setValue(qso.getMode());
+        formDate.getEditor().setText(formDate.getConverter().toString(qso.getDate()));
+        formTimeLabel.setText("Time (UTC)");
+        formTimeHH.setText(qso.getTime().format(DateTimeFormatter.ofPattern("kk")));
+        formTimeMM.setText(qso.getTime().format(DateTimeFormatter.ofPattern("mm")));
+        formCallsign.setText(qso.getCallsign());
+        formRstSent.setText(qso.getRstSent());
+        formRstReceived.setText(qso.getRstReceived());
+        formParkToPark.setText(qso.getParkToPark());
     }
 
-    private void addContactOnEnter(KeyEvent event) {
-        if (event.getCode() == KeyCode.ENTER && !event.isAltDown() && !event.isControlDown() && !event.isMetaDown() && !event.isShiftDown()) {
-            addContact();
-        }
-    }
-    
-    public void addContact() {
+
+    public void updateContact(ActionEvent actionEvent) {
         boolean valid = validateTextFieldNotBlank(formCallsign);
         valid &= validateTextFieldNotBlank(formRstSent);
         valid &= validateTextFieldNotBlank(formRstReceived);
@@ -191,15 +163,17 @@ public class MainFormController extends VBox {
                 myCq.getText(),
                 myIaruRegion.getText()
         );
-        AtomicBoolean duplicateQso = new AtomicBoolean(false);
-        listeners.forEach(listener -> { if (!listener.onQsoAdd(qso)) duplicateQso.set(true); });
-        if (duplicateQso.get()) {
-            formMessage.setText("Duplicate QSO!");
-        } else {
-            formMessage.setText("");
-            formParkToPark.clear();
-            formTimeMM.requestFocus();
-        }
+        callbackListener.onUpdate(qsoIndex, qso);
+        closeWindow();
+    }
+
+    public void deleteContact(ActionEvent actionEvent) {
+        callbackListener.onDelete(qsoIndex);
+        closeWindow();
+    }
+
+    public void closeWindow() {
+        ((Stage)myCallsign.getScene().getWindow()).close();
     }
 
     private static boolean validateTextFieldNotBlank(TextInputControl textInputControl) {
@@ -232,7 +206,7 @@ public class MainFormController extends VBox {
         }
     }
 
-     private static boolean validateDatePicker(DatePicker datepicker) {
+    private static boolean validateDatePicker(DatePicker datepicker) {
         if (datepicker.getEditor().getText().isBlank()) {
             datepicker.pseudoClassStateChanged(errorClass, true);
             return false;
@@ -257,24 +231,10 @@ public class MainFormController extends VBox {
         }
 
         try {
-            LocalDateTime localDateTime = LocalDateTime.parse(formDate.getValue() + "T" + formTimeHH.getText() + ":" + formTimeMM.getText());
-            if (userPrefs.getBoolean("settingsLocalTime", false)) {
-                localDateTime = localDateTime.atZone(Clock.systemDefaultZone().getZone()).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
-            }
-            return localDateTime;
+            return LocalDateTime.parse(formDate.getValue() + "T" + formTimeHH.getText() + ":" + formTimeMM.getText());
         } catch (DateTimeParseException e) {
             return null;
         }
     }
 
-    public void savePreferences() {
-        userPrefs.put("myCallsign", myCallsign.getText());
-        userPrefs.put("myGrid", myGrid.getText());
-        userPrefs.put("myCountry", myCountry.getText());
-        userPrefs.put("myState", myState.getText());
-        userPrefs.put("myCounty", myCounty.getText());
-        userPrefs.put("myIaruRegion", myIaruRegion.getText());
-        userPrefs.put("myItu", myItu.getText());
-        userPrefs.put("myCq", myCq.getText());
-    }
 }

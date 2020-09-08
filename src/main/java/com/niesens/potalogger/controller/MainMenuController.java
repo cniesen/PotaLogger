@@ -101,7 +101,6 @@ public class MainMenuController extends MenuBar {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void appHomepage() {

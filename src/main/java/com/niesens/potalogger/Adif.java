@@ -45,7 +45,7 @@ public class Adif {
         appendAdifField("RST_SENT", qso.getRstSent());
         appendAdifField("BAND", Band.ofFrequency(qso.getFrequency()).toString());
         appendAdifField("FREQ", qso.getFrequency());
-        appendAdifField("MODE", qso.getMode());
+        appendAdifField("MODE", qso.getMode().toString());
         if (!qso.getParkToPark().isBlank()) {
             appendAdifField("SIG_INFO", qso.getParkToPark());
         }
@@ -71,7 +71,7 @@ public class Adif {
         appendAdifField("TIME_ON", qso.getTime());
         appendAdifField("CALL", qso.getCallsign());
         appendAdifField("BAND", Band.ofFrequency(qso.getFrequency()).toString());
-        appendAdifField("MODE", qso.getMode());
+        appendAdifField("MODE", qso.getMode().toString());
         if (!qso.getParkToPark().isBlank()) {
             appendAdifField("SIG_INFO", qso.getParkToPark());
         }
