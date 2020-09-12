@@ -18,6 +18,7 @@ package com.niesens.potalogger.controller;
 import com.niesens.potalogger.Adif;
 import com.niesens.potalogger.PotaLoggerApplication;
 import com.niesens.potalogger.Qso;
+import com.niesens.potalogger.UdpSendTask;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -26,6 +27,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
@@ -35,15 +38,15 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
-import org.springframework.integration.ip.udp.UnicastSendingMessageHandler;
-import org.springframework.messaging.support.MessageBuilder;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 public class MainController implements Initializable, MainMenuController.Listener, MainFormController.Listener, EditQsoController.Listener {
@@ -149,8 +152,25 @@ public class MainController implements Initializable, MainMenuController.Listene
 
     @Override
     public void onSendUdpAdifFile() {
-        UnicastSendingMessageHandler handler = new UnicastSendingMessageHandler(userPrefs.get("settingsHost",""), userPrefs.getInt("settingsPort",0));
-        handler.handleMessage(MessageBuilder.withPayload(new Adif().addAllQsos(qsoObservableList, false).toString()).build());
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About Claus' POTA Logger");
+        alert.setHeaderText("Sending data");
+        alert.show();
+
+        Adif adif = new Adif().addAllQsos(qsoObservableList, false);
+        String host = userPrefs.get("settingsHost","<unspecified>");
+        int port = userPrefs.getInt("settingsPort",0);
+        UdpSendTask udpSendTask = new UdpSendTask(adif.toString(), host, port);
+        udpSendTask.setOnFailed(event -> {
+            alert.setResult(ButtonType.OK);
+            alert.close();
+            Alert alert2 = new Alert(Alert.AlertType.ERROR);
+            alert2.setTitle("About Claus' POTA Logger");
+            alert2.setHeaderText("ADIF send via UDP to host \"" + host + "\" on port \"" + port + "\" failed.");
+            alert2.setContentText(event.getSource().getException().getMessage());
+            alert2.showAndWait();
+        });
+        new Thread(udpSendTask).start();
     }
 
     @Override

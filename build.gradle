@@ -1,16 +1,12 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-	id 'java'
-	id 'application'
-	id 'org.springframework.boot' version '2.3.3.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
 	id 'org.openjfx.javafxplugin' version '0.0.9'
-	id 'com.github.johnrengelman.shadow' version '6.0.0'
+	id 'org.beryx.runtime' version '1.11.4'
 }
 
 group = 'com.niesens'
-version = '0.0.4-SNAPSHOT'
+version = '1.0'
 sourceCompatibility = '14'
 
 repositories {
@@ -18,9 +14,6 @@ repositories {
 }
 
 dependencies {
-
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.integration:spring-integration-ip'
 	implementation 'org.openjfx:javafx-controls:14'
 	implementation 'org.openjfx:javafx-fxml:14'
 	implementation 'org.openjfx:javafx-graphics:14:win'
@@ -28,9 +21,8 @@ dependencies {
 	implementation 'org.openjfx:javafx-graphics:14:linux'
 	implementation 'commons-io:commons-io:2.7'
 	implementation 'org.apache.commons:commons-lang3:3.11'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 }
 
 test {
@@ -44,6 +36,28 @@ javafx {
 
 application {
 	mainClassName = 'com.niesens.potalogger.Main'
+	applicationName = 'PotaLogger'
+}
+
+runtime {
+	options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+	launcher {
+		noConsole = true
+	}
+	jpackage {
+		def currentOs = org.gradle.internal.os.OperatingSystem.current()
+		def imgType = currentOs.windows ? 'ico' : currentOs.macOsX ? 'icns' : 'png'
+		imageOptions += ['--icon', "src/main/resources/PotaLogger.$imgType"]
+		installerOptions += ['--resource-dir', "build/jpackage/LotaLogger/lib"]
+		installerOptions += ['--app-version', version]
+		installerOptions += ['--copyright', "Copyright 2020 Claus Niesen"]
+		installerOptions += ['--name', "Claus' POTA Logger"]
+		installerOptions += ['--vendor', "Claus Niesen"]
+		installerOptions += ['--license-file', "COPYING.md"]
+		if(currentOs.windows) {
+			installerOptions += ['--win-dir-chooser', '--win-menu', '--win-shortcut']
+		}
+	}
 }
 
 processResources {

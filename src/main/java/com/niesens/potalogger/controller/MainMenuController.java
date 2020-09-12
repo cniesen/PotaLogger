@@ -24,6 +24,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -131,6 +133,7 @@ public class MainMenuController extends MenuBar {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("About Claus' POTA Logger");
         alert.setHeaderText("Claus' POTA Logger is published under the GPL 3.0 license\nCopyright (c) 2020 by Claus Niesen\n\nVersion: " + BuildInfo.getVersion());
+        alert.setGraphic(new ImageView(new Image(getClass().getClassLoader().getResource("PotaLogger.png").toExternalForm())));
         alert.showAndWait();
     }
 
