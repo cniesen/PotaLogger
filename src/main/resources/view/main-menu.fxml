@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.BorderPane?>
 
 <MenuBar BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="com.niesens.potalogger.controller.MainMenuController">
+         fx:controller="com.niesens.potalogger.controller.MainMenuController" fx:id="menuBar">
     <menus>
         <Menu text="_File">
             <items>
@@ -27,7 +27,7 @@
                 <MenuItem fx:id="menuSavePotaAdifFile" onAction="#savePotaAdifFile" text="Save _POTA ADIF" />
                 <MenuItem fx:id="menuUdpAdifFile" onAction="#sendUdpAdifFile" text="_UDP Send (Log4OM)" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem text="_Exit" />
+                <MenuItem onAction="#exitApplication" text="_Exit" />
             </items>
         </Menu>
         <Menu text="_Options">

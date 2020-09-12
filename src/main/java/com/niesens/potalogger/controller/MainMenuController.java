@@ -28,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.awt.*;
 import java.io.IOException;
@@ -39,6 +40,8 @@ import java.util.Objects;
 
 public class MainMenuController extends MenuBar {
 
+    @FXML
+    private MenuBar menuBar;
     @FXML
     private MenuItem menuSaveAdifFile;
     @FXML
@@ -85,6 +88,11 @@ public class MainMenuController extends MenuBar {
 
     public void sendUdpAdifFile() {
         listeners.forEach(Listener::onSendUdpAdifFile);
+    }
+
+    public void exitApplication() {
+        Stage stage = (Stage) menuBar.getScene().getWindow();
+        stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
     public void settingsLocalTime() {
