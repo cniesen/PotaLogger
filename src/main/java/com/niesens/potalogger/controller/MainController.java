@@ -104,6 +104,9 @@ public class MainController implements Initializable, MainMenuController.Listene
 
     @Override
     public boolean onQsoAdd(Qso qso) {
+        // scroll to bottom of QSO list
+        qsoTableView.scrollTo(qsoTableView.getItems().size() -1);
+
         if (qsoObservableList.contains(qso)) {
             return false;
         } else {

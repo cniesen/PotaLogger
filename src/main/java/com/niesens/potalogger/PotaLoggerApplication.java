@@ -49,6 +49,9 @@ public class PotaLoggerApplication extends Application {
 		});
 		primaryStage.setScene(new Scene(root, 800, 500));
 		primaryStage.getScene().getStylesheets().add("stylesheet.css");
+		primaryStage.setMaxWidth(825);
+		primaryStage.setMinWidth(825);
+		primaryStage.setMinHeight(400);
 		primaryStage.show();
 	}
 }

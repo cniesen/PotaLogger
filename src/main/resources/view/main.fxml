@@ -17,16 +17,16 @@
 
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="524.0"
-            prefWidth="789.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.niesens.potalogger.controller.MainController">
+<?import javafx.scene.layout.VBox?>
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.niesens.potalogger.controller.MainController"
+            prefHeight="524.0" prefWidth="789.0">
     <top>
-        <fx:include fx:id="menuBar" source="main-menu.fxml" />
+        <VBox prefWidth="100.0">
+            <fx:include fx:id="menuBar" source="main-menu.fxml" />
+            <fx:include fx:id="form" source="main-form.fxml" />
+        </VBox>
     </top>
     <center>
-        <fx:include fx:id="form" source="main-form.fxml" />
-    </center>
-    <bottom>
         <fx:include fx:id="qsoTableView" source="main-table.fxml" />
-    </bottom>
+    </center>
 </BorderPane>
