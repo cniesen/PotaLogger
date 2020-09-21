@@ -21,7 +21,4 @@ The code of Claus' Pota Logger has been Licensed under [GNU GPL 3.0](https://git
 
 Development
 -----------
-
-Run: `gradlew run`
-
-Distribute: `gradlew shadowJar`
+Developer instruction on how to build the application is documented in the [DEVELOPER.md](https://github.com/cniesen/PotaLogger/blob/master/DEVELOPER.md) file.
