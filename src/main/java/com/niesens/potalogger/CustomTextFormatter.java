@@ -37,7 +37,7 @@ public class CustomTextFormatter {
      * Frequency 1 through 999.999
      */
     public static TextFormatter.Change frequency(TextFormatter.Change change) {
-        return change.getControlNewText().matches("[1-9]{0,3}|[1-9]{1,3}\\.|[1-9]{1,3}\\.[0-9]{0,3}") ? change : null;
+        return change.getControlNewText().matches("[1-9]?|[1-9][0-9]{0,2}|[1-9][0-9]{0,2}\\.|[1-9][0-9]{0,2}\\.[0-9]{0,3}") ? change : null;
     }
 
     /**
