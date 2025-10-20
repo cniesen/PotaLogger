@@ -1,7 +1,7 @@
 Claus' POTA Logger
 ==================
 
-Work in progress!
+Status: Cancelled
 
 Logging Parks-on-the-Air (POTA) activation is a pain, especially with Log4OM.
 This project allows easy data entry from paper logs, creation of ADIF files that are sent to POTA, 
